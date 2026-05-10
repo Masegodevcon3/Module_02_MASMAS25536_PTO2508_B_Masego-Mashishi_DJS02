@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Podcast Preview Demo</title>
+<title>Podcast Preview Web Component with Modal</title>
 <script type="module">
-  // Define the web component
+  /**
+   * Defines the custom web component for podcast preview.
+   */
   class PodcastPreview extends HTMLElement {
     constructor() {
       super();
@@ -53,6 +55,11 @@
             font-family: Arial, sans-serif;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             margin: 10px;
+            background-color: #fff;
+            transition: box-shadow 0.2s;
+          }
+          :host(:hover) {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
           }
           .container {
             display: flex;
@@ -61,6 +68,7 @@
           img {
             width: 100%;
             height: auto;
+            display: block;
           }
           .content {
             padding: 10px;
@@ -68,14 +76,12 @@
           h3 {
             margin: 0 0 10px 0;
             font-size: 1.2em;
+            font-weight: bold;
           }
           p {
             margin: 4px 0;
-          }
-          @media (max-width: 600px) {
-            :host {
-              max-width: 100%;
-            }
+            font-size: 0.9em;
+            line-height: 1.2em;
           }
         </style>
         <div class="container">
@@ -96,91 +102,19 @@
 </head>
 <body>
 <h1>Podcast List</h1>
-<div id="podcast-container"></div>
+<div id="podcast-container" style="display:flex; flex-wrap: wrap; gap:10px;"></div>
+
+<!-- Modal for detailed info -->
+<div id="modal" style="
+  display: none; position: fixed; top:0; left:0; width:100%; height:100%; 
+  background:#0008; justify-content:center; align-items:center; z-index:1000;">
+  <div style="
+    background:#fff; padding:20px; max-width:500px; width:90%; border-radius:8px; position:relative;">
+    <button id="closeBtn" style="
+      position:absolute; top:10px; right:10px; padding:5px 10px;">Close</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
 
 <script>
-  // Your data embedded directly into the HTML
-  const podcasts = [
-    {
-      id: "10716",
-      title: "Something Was Wrong",
-      description:
-        "Something Was Wrong is an Iris Award-winning true-crime docuseries about the discovery, trauma, and recovery from shocking life events and abusive relationships.",
-      seasons: 14,
-      image:
-        "https://content.production.cdn.art19.com/images/cc/e5/0a/08/cce50a08-d77d-490e-8c68-17725541b0ca/9dcebd4019d57b9551799479fa226e2a79026be5e2743c7aef19eac53532a29d66954da6e8dbdda8219b059a59c0abe6dba6049892b10dfb2f25ed90d6fe8d9a.jpeg",
-      genres: [1, 2],
-      updated: "2022-11-03T07:00:00.000Z",
-    },
-    {
-      id: "5675",
-      title: "This Is Actually Happening",
-      description:
-        "What if your mother left to follow a cult… or you woke up in a morgue… or if your boat got caught in a storm and began to sink -- what would you do?   This is Actually Happening brings you extraordinary true stories of life-changing events told by the people who lived them. From a man who finds out a celebrity crush isn’t who she seems to a woman stranded in a Mexican desert fighting to survive, these stories will have you on the edge of your seat waiting to hear what happens next. New episodes come out every Tuesday for free. Listen 1-week early and to exclusive past episodes - all ad-free - with Wondery+ or Amazon Music with a Prime membership or Amazon Music Unlimited subscription.",
-      seasons: 12,
-      image:
-        "https://content.production.cdn.art19.com/images/5a/4f/d4/19/5a4fd419-11af-4270-b31c-2c7ed2f563a5/bc913bc926be23d04c9a4d29a829269a753be3d2612dad91f7e92ba4618fefc5c8802af29a1d32b3261eb03f83613e2535e3c574469b0cb510c32cd8d94cfaa1.png",
-      genres: [2],
-      updated: "2022-11-01T10:00:00.000Z",
-    },
-    // Add more podcasts as needed...
-  ];
-
-  const genres = [
-    {
-      id: 1,
-      title: "Personal Growth",
-    },
-    {
-      id: 2,
-      title: "Investigative Journalism",
-    },
-    {
-      id: 3,
-      title: "History",
-    },
-    {
-      id: 4,
-      title: "Comedy",
-    },
-    {
-      id: 5,
-      title: "Entertainment",
-    },
-    // Add more genres as needed...
-  ];
-
-  // Helper function to get genre names
-  function getGenreNames(genreIds) {
-    return genreIds
-      .map(id => {
-        const genre = genres.find(g => g.id === id);
-        return genre ? genre.title : '';
-      })
-      .join(', ');
-  }
-
-  const container = document.getElementById('podcast-container');
-
-  // Generate podcast previews
-  podcasts.forEach(podcast => {
-    const preview = document.createElement('podcast-preview');
-
-    // Set attributes
-    preview.setAttribute('cover', podcast.image);
-    preview.setAttribute('title', podcast.title);
-    preview.setAttribute('genres', getGenreNames(podcast.genres));
-    preview.setAttribute('seasons', podcast.seasons);
-    // Format date as YYYY-MM-DD
-    preview.setAttribute('last-updated', podcast.updated.slice(0, 10));
-
-    // Listen for click event
-    preview.addEventListener('podcast-selected', () => {
-      alert('You selected: ' + podcast.title);
-    });
-
-    container.appendChild(preview);
-  });
-</script>
-</body>
-</html>
+  // Your embedded data
