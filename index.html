@@ -4,9 +4,6 @@
 <meta charset="UTF-8" />
 <title>Podcast Preview Web Component with Modal</title>
 <script type="module">
-  /**
-   * Defines the custom web component for podcast preview.
-   */
   class PodcastPreview extends HTMLElement {
     constructor() {
       super();
@@ -96,7 +93,6 @@
       `;
     }
   }
-
   customElements.define('podcast-preview', PodcastPreview);
 </script>
 </head>
@@ -117,4 +113,114 @@
 </div>
 
 <script>
-  // Your embedded data
+  // Your embedded data with more items to see multiple
+  const podcasts = [
+    {
+      id: "10716",
+      title: "Something Was Wrong",
+      description: "True-crime series about shocking life events.",
+      seasons: 14,
+      image: "https://content.production.cdn.art19.com/images/cc/e5/0a/08/cce50a08-d77d-490e-8c68-17725541b0ca/9dcebd4019d57b9551799479fa226e2a79026be5e2743c7aef19eac53532a29d66954da6e8dbdda8219b059a59c0abe6dba6049892b10dfb2f25ed90d6fe8d9a.jpeg",
+      genres: [1, 2],
+      updated: "2022-11-03T07:00:00.000Z",
+    },
+    {
+      id: "5675",
+      title: "This Is Actually Happening",
+      description: "Extraordinary true stories of life-changing events.",
+      seasons: 12,
+      image: "https://content.production.cdn.art19.com/images/5a/4f/d4/19/5a4fd419-11af-4270-b31c-2c7ed2f563a5/bc913bc926be23d04c9a4d29a829269a753be3d2612dad91f7e92ba4618fefc5c8802af29a1d32b3261eb03f83613e2535e3c574469b0cb510c32cd8d94cfaa1.png",
+      genres: [2],
+      updated: "2022-11-01T10:00:00.000Z",
+    },
+    {
+      id: "6807",
+      title: "Even the Rich",
+      description: "Stories about family dynasties, gossip, and power.",
+      seasons: 33,
+      image: "https://content.production.cdn.art19.com/images/c3/55/d2/da/c355d2da-f845-47df-a4e6-22b70a5082bb/c290fe89d3a699dd5c316f5f4cfe2ca942183cef5d6ac4fc2d7d6df296690c9e7183f79422dcb0b37af7c7e7e59de0e36cddd3b01500bf066a470614c9a0af6d.png",
+      genres: [4, 5, 3],
+      updated: "2022-11-01T07:08:00.000Z",
+    },
+    {
+      id: "8514",
+      title: "Against The Odds",
+      description: "Stories of survival and resilience.",
+      seasons: 19,
+      image: "https://content.production.cdn.art19.com/images/a3/77/2c/e4/a3772ce4-34f7-431d-bf80-968f555b7003/6c099d5ec76b40bb54e72a75c1dcbc44c5c13a764114fb5183fe7eecd201619fca37cf3dd029c2fc320fb1a3cfab716d94297cbe7bb32ead208b779579015683.png",
+      genres: [3],
+      updated: "2022-11-01T07:01:00.000Z",
+    },
+    {
+      id: "10276",
+      title: "This Podcast Will Kill You",
+      description: "All about infectious diseases and history.",
+      seasons: 5,
+      image: "https://content.production.cdn.art19.com/images/f5/16/e0/99/f516e099-4c64-4737-9fdb-55f4d45a4003/6d14be58e0a54d21128c239dd933e0f3c36ca00f85ea7294cbea91a2b214d2384361c2a765842eef66e8583b2c21302c8fd2b1eb4d32e3805481292d758f20aa.jpeg",
+      genres: [1],
+      updated: "2022-10-25T07:01:00.000Z",
+    }
+  ];
+
+  const genres = [
+    { id: 1, title: "Personal Growth" },
+    { id: 2, title: "Investigative Journalism" },
+    { id: 3, title: "History" },
+    { id: 4, title: "Fiction" },
+    { id: 5, title: "Science & Tech" }
+  ];
+
+  /**
+   * Helper to get genre names
+   * @param {number[]} genreIds
+   * @returns {string}
+   */
+  function getGenreNames(genreIds) {
+    return genreIds
+      .map(id => {
+        const g = genres.find(g => g.id === id);
+        return g ? g.title : '';
+      })
+      .filter(name => name !== '')
+      .join(', ');
+  }
+
+  const container = document.getElementById('podcast-container');
+
+  // Create previews
+  podcasts.forEach(p => {
+    const el = document.createElement('podcast-preview');
+    el.setAttribute('cover', p.image);
+    el.setAttribute('title', p.title);
+    el.setAttribute('genres', getGenreNames(p.genres));
+    el.setAttribute('seasons', p.seasons);
+    el.setAttribute('last-updated', p.updated.slice(0, 10));
+
+    // Show modal on click
+    el.addEventListener('podcast-selected', () => {
+      showModal(p);
+    });
+    container.appendChild(el);
+  });
+
+  // Modal logic
+  const modal = document.getElementById('modal');
+  const modalContent = document.getElementById('modalContent');
+  const closeBtn = document.getElementById('closeBtn');
+
+  function showModal(p) {
+    modal.style.display = 'flex';
+    modalContent.innerHTML = `
+      <h2>${p.title}</h2>
+      <img src="${p.image}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-bottom:10px;">
+      <p><strong>Genres:</strong> ${getGenreNames(p.genres)}</p>
+      <p><strong>Seasons:</strong> ${p.seasons}</p>
+      <p><strong>Last Updated:</strong> ${new Date(p.updated).toLocaleDateString()}</p>
+      <p>${p.description}</p>
+    `;
+  }
+
+  closeBtn.onclick = () => { modal.style.display = 'none'; };
+</script>
+</body>
+</html>
